@@ -1,4 +1,4 @@
-// This program checks if, for any given a,b,c,d numbers, (a±b±c)*d=24 or a*(b±c±d)=24;
+// This program checks if, for any given a,b,c,d numbers, (a±b±c)*d=24 and if a*(b±c±d)=24;
 
 #include <stdio.h>
 #include <stdlib.h>
