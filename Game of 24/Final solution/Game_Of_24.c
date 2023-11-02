@@ -60,6 +60,20 @@ void print(int* inNum, int* pos, int operations, int type) {
                inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
+    if (type == 4) {
+        // Type 4 expression: a#(b#(c#d))=24
+        printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1),
+               inNum[pos[1]], getChar(op2),
+               inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        outputCount++;
+    }
+    if (type == 5) {
+        // Type 5 expression: a#((b#c)#d)=24
+        printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1),
+               inNum[pos[1]], getChar(op2),
+               inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        outputCount++;
+    }
 }
 
 int getResult(int* inNum, int* pos, int oper) {
@@ -67,38 +81,73 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Calculate the first possible result
     int op1 = (oper / 4) % 4;
-    int op2 = (oper / 16) % 4;
+    int op2 = oper % 4;
+    int op3 = (oper / 16) % 4;
+    res1 = calculate(inNum[pos[1]], inNum[pos[2]], op1);
+    res2 = calculate(res1, inNum[pos[3]], op2);
+    res = calculate(inNum[pos[0]], res2, op3);
+
+    // Check if the result is valid and equals 24
+    if (res1 != min && res2 != min && res == 24) {
+        return 5; // Type 5 expression: a#((b#c)#d)=24
+    }
+
+    // Calculate the second possible result
+    op1 = oper % 4;
+    op2 = (oper / 4) % 4;
+    op3 = (oper / 16) % 4;
+    res1 = calculate(inNum[pos[2]], inNum[pos[3]], op1);
+    res2 = calculate(inNum[pos[1]], res1, op2);
+    res = calculate(inNum[pos[0]], res2, op3);
+
+    // Check if the result is valid and equals 24
+    if (res1 != min && res2 != min && res == 24) {
+        return 4; // Type 4 expression: a#(b#(c#d))=24
+    }
+
+    // Calculate the third possible result
+    op1 = (oper / 4) % 4;
+    op2 = (oper / 16) % 4;
+    op3 = oper % 4;
     res1 = calculate(inNum[pos[1]], inNum[pos[2]], op1);
     res2 = calculate(inNum[pos[0]], res1, op2);
-    res = calculate(res2, inNum[pos[3]], oper % 4);
+    res = calculate(res2, inNum[pos[3]], op3);
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
         return 3; // Type 3 expression: (a#(b#c))#d=24
     }
 
-    // Calculate the second possible result
+    // Calculate the fourth possible result
     op1 = (oper / 16) % 4;
     op2 = (oper / 4) % 4;
+    op3 = oper % 4;
     res1 = calculate(inNum[pos[0]], inNum[pos[1]], op1);
     res2 = calculate(res1, inNum[pos[2]], op2);
-    res = calculate(res2, inNum[pos[3]], oper % 4);
+    res = calculate(res2, inNum[pos[3]], op3);
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
         return 2; // Type 2 expression: ((a#b)#c)#d=24
     }
 
-    // Calculate the third possible result
+    // Calculate the fifth possible result
     op1 = (oper / 16) % 4;
     op2 = oper % 4;
+    op3 = (oper / 4) % 4;
     res1 = calculate(inNum[pos[0]], inNum[pos[1]], op1);
     res2 = calculate(inNum[pos[2]], inNum[pos[3]], op2);
-    res = calculate(res1, res2, (oper / 4) % 4);
+    res = calculate(res1, res2, op3);
 
     // Check if the result is valid and equals 24
-    return (res1 != min && res2 != min && res == 24);
+    if (res1 != min && res2 != min && res == 24) {
+        return 1; // Type 1 expression: (a#b)#(c#d)=24
+    }
+
+    // Return 0 for no valid result
+    return 0;
 }
+
 
 // generate all possible operations
 int backOp(int* inNum, int* pos) {
@@ -116,6 +165,14 @@ int backOp(int* inNum, int* pos) {
         if (result==3) {
             print(inNum, pos, i, result);
             return 3;
+        }
+        if (result==4) {
+            print(inNum, pos, i, result);
+            return 4;
+        }
+        if (result==5) {
+            print(inNum, pos, i, result);
+            return 5;
         }
     }
     return 0;
@@ -145,7 +202,7 @@ int backVal(int *inNum, int *pos, int location) {
             pos[location] = i;
             if (backVal(inNum, pos, location + 1)==1) { //recursive function
                 // there is a solution, keep executing the code
-                return 1;
+                //return 1;
             }
         }
     }
@@ -169,4 +226,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
