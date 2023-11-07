@@ -3,9 +3,9 @@
 
 int min=-10000, outputCount=0;
 
-float calculate(int a, int b, int operation) {
+float calculate(float a, float b, int operation) {
     if (operation == 3) {
-        if (b == 0 || a % b != 0) {
+        if (b == 0 /*|| a % b != 0*/) {
             return min; // Division by zero or fractional result, consider it invalid
         }
         return a / b;
@@ -48,36 +48,30 @@ void print(int* inNum, int* pos, int operations, int type) {
         printf("(%d %c (%d %c %d)) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    if (type == 2) {
+    else if (type == 2) {
         // Type 2 expression: ((a#b)#c)#d=24
         printf("((%d %c %d) %c %d) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    if (type == 1) {
+    else if (type == 1) {
         // Type 1 expression: (a#b)#(c#d)=24
-        printf("(%d %c %d) %c (%d %c %d) = 24\n", inNum[pos[0]], getChar(op1),
-               inNum[pos[1]], getChar(op2),
-               inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        printf("(%d %c %d) %c (%d %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    if (type == 4) {
+    else if (type == 4) {
         // Type 4 expression: a#(b#(c#d))=24
-        printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1),
-               inNum[pos[1]], getChar(op2),
-               inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    if (type == 5) {
+    else if (type == 5) {
         // Type 5 expression: a#((b#c)#d)=24
-        printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1),
-               inNum[pos[1]], getChar(op2),
-               inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
 }
 
 int getResult(int* inNum, int* pos, int oper) {
-    int res1, res2, res;
+    float res1, res2, res;
 
     // Calculate the first possible result
     int op1 = (oper / 4) % 4;
@@ -150,40 +144,34 @@ int getResult(int* inNum, int* pos, int oper) {
 
 
 // generate all possible operations
-int backOp(int* inNum, int* pos) {
-    int result;
+void backOp(int* inNum, int* pos) {
+    float result;
     for (int i = 0; i < 64; i++) {
         result = getResult(inNum, pos, i);
         if (result==1) {
             print(inNum, pos, i, result);
-            return 1;
         }
         if (result==2) {
             print(inNum, pos, i, result);
-            return 2;
         }
         if (result==3) {
             print(inNum, pos, i, result);
-            return 3;
         }
         if (result==4) {
             print(inNum, pos, i, result);
-            return 4;
         }
         if (result==5) {
             print(inNum, pos, i, result);
-            return 5;
         }
     }
-    return 0;
 }
 
 // checks if the element is already in the position array
 int isInNum(int* pos, int i, int size) {
     for (int e = 0; e < size; e++) {
-        if (pos[e] == i)
-
+        if (pos[e] == i) {
             return 1;
+        }
     }
     return 0;
 }
@@ -193,7 +181,7 @@ int backVal(int *inNum, int *pos, int location) {
     int four = 4;
     if (location == 4) {
         //backtrack how to get the result
-        return backOp(inNum, pos);
+        backOp(inNum, pos);
     }
 
     for (int i = 0; i < four; i++) {
@@ -202,7 +190,7 @@ int backVal(int *inNum, int *pos, int location) {
             pos[location] = i;
             if (backVal(inNum, pos, location + 1)==1) { //recursive function
                 // there is a solution, keep executing the code
-                //return 1;
+                return 1;
             }
         }
     }
@@ -219,7 +207,7 @@ int main(int argc, char *argv[]) {
         scanf("%d", &inNum[i]);
 
     if (backVal(inNum, pos, 0)==0 && outputCount==0)
-        printf("There are no solutions for these cards :( \n");
+        printf("There are no solutions for these cards :(\n");
 
     free(inNum);
     free(pos);
