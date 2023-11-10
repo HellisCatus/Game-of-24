@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int min=-10000, outputCount=0, formPos[24][4] = {0}, nrLines = -1;
+int min=-10000, outputCount=0, formPos[24][4] = {0}, nrLines = -1, *answer;
 
 double calculate(double a, double b, int operation) {
     switch (operation) {
@@ -13,11 +13,11 @@ double calculate(double a, double b, int operation) {
         case 2:
             return a - b;
         case 3:
-            if(b != 0){
+            if(b != 0) {
                 return a / b;
             }
-            else{
-                return min; // If the denominator is null, show the operation as invalid
+            else {
+                return min; // If the denominator is null, show the division operation as invalid
             }
     }
     return min; // Invalid operation
@@ -38,39 +38,39 @@ char getChar(int operation) {
 }
 
 //The following function prints out expression that equals to 24. The function has the characters, positions of input numbers
-void print(int* inNum, int* pos, int operations, int type) {
+void print(int *inNum, int *pos, int operations, int *type) {
     int op1 = (operations / 16) % 4; // Extract the first operation
     int op2 = (operations / 4) % 4;  // Extract the second operation
     int op3 = operations % 4;        // Extract the third operation
 
-    if (type == 5) {
+    if (type[5] == 1) {
         // Type 5 expression: a#((b#c)#d)=24
         printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    else if (type == 4) {
+    if (type[4] == 1) {
         // Type 4 expression: a#(b#(c#d))=24
         printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    else if (type == 3) {
+    if (type[3] == 1) {
         // Type 3 expression: (a#(b#c))#d=24
         printf("(%d %c (%d %c %d)) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    else if (type == 2) {
+    if (type[2] == 1) {
         // Type 2 expression: ((a#b)#c)#d=24
         printf("((%d %c %d) %c %d) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    else if (type == 1) {
+    if (type[1] == 1) {
         // Type 1 expression: (a#b)#(c#d)=24
         printf("(%d %c %d) %c (%d %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
 }
 
-int getResult(int* inNum, int* pos, int oper) {
+int *getResult(int *inNum, int *pos, int oper) {
     double res1, res2, res;
 
     // Calculate the first possible result
@@ -87,7 +87,10 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
-        return 5; // Type 5 expression: a#((b#c)#d)=24
+        answer[5] = 1; // Type 5 expression: a#((b#c)#d)=24
+    }
+    else{
+        answer[5] = 0;
     }
 
     // Calculate the second possible result
@@ -104,7 +107,10 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
-        return 4; // Type 4 expression: a#(b#(c#d))=24
+        answer[4] = 1; // Type 4 expression: a#(b#(c#d))=24
+    }
+    else{
+        answer[4] = 0;
     }
 
     // Calculate the third possible result
@@ -121,7 +127,10 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
-        return 3; // Type 3 expression: (a#(b#c))#d=24
+        answer[3] = 1; // Type 3 expression: (a#(b#c))#d=24
+    }
+    else{
+        answer[3] = 0;
     }
 
     // Calculate the fourth possible result
@@ -138,7 +147,10 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
-        return 2; // Type 2 expression: ((a#b)#c)#d=24
+        answer[2] = 1; // Type 2 expression: ((a#b)#c)#d=24
+    }
+    else{
+        answer[2] = 0;
     }
 
     // Calculate the fifth possible result
@@ -155,34 +167,23 @@ int getResult(int* inNum, int* pos, int oper) {
 
     // Check if the result is valid and equals 24
     if (res1 != min && res2 != min && res == 24) {
-        return 1; // Type 1 expression: (a#b)#(c#d)=24
+        answer[1] = 1; // Type 1 expression: (a#b)#(c#d)=24
+    }
+    else{
+        answer[1] = 0;
     }
 
     // Return 0 for no valid result
-    return 0;
+    return answer;
 }
 
 
 // generate all possible operations
-void backOp(int* inNum, int* pos) {
-    double result;
+void backOp(int *inNum, int *pos) {
+    int *result;
     for (int i = 0; i < 64; i++) {
         result = getResult(inNum, pos, i);
-        if (result==1) {
-            print(inNum, pos, i, result);
-        }
-        if (result==2) {
-            print(inNum, pos, i, result);
-        }
-        if (result==3) {
-            print(inNum, pos, i, result);
-        }
-        if (result==4) {
-            print(inNum, pos, i, result);
-        }
-        if (result==5) {
-            print(inNum, pos, i, result);
-        }
+        print(inNum, pos, i, result);
     }
 }
 
@@ -236,15 +237,17 @@ int backVal(int *inNum, int *pos, int location) {
 }
 
 int main(int argc, char *argv[]) {
-    int *inNum, *pos, four=4;
-    inNum = (int*)malloc(four*sizeof(int)); //array for input cards
-    pos = (int*)calloc(four,sizeof(int)); //array for possible combinations of card positions
+    int *inNum, *pos;
+    inNum = (int*)malloc(4 *sizeof(int)); // array for input cards
+    pos = (int*)calloc(4,sizeof(int)); // array for possible combinations of card positions
+    answer = (int*)calloc(6,sizeof(int)); // array for possible types of answers when the order of the numbers and the operations has been determined
 
     // read input cards
-    for (int i = 0; i < four; i++)
+    for (int i = 0; i < 4; i++)
         scanf("%d", &inNum[i]);
 
-    for(int i = 0; i < 3; i++){
+    // sort the input numbers in ascending order
+    for(int i = 0; i < 3; i++) {
         for(int j = i + 1; j < 4; j++) {
             if (inNum[i] > inNum[j]) {
                 int aux = inNum[i];
@@ -265,6 +268,7 @@ int main(int argc, char *argv[]) {
 
     free(inNum);
     free(pos);
+    free(answer);
 
     return 0;
 }
