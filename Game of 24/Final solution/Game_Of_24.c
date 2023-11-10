@@ -173,7 +173,6 @@ int *getResult(int *inNum, int *pos, int oper) {
         answer[1] = 0;
     }
 
-    // Return 0 for no valid result
     return answer;
 }
 
