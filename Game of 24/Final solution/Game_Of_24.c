@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int min=-10000, outputCount=0, formPos[24][4] = {0}, nrLines = -1, *answer;
+int min=-10000, outputCount=0, **formPos, nrLines = -1, *answer;
 
 double calculate(double a, double b, int operation) {
     switch (operation) {
@@ -242,6 +242,13 @@ int main(int argc, char *argv[]) {
     pos = (int*)calloc(4,sizeof(int)); // array for possible combinations of card positions
     answer = (int*)calloc(6,sizeof(int)); // array for possible types of answers when the order of the numbers and the operations has been determined
 
+    int row;
+    // formPos is the matrix used for storing all the permutations of the four input numbers, to make sure that the same permutation is not taken into consideration more than once
+    formPos = (int**)calloc(24,sizeof(int*));
+    for(row = 0; row < 24; row++) {
+        formPos[row] = (int*)calloc(4,sizeof(double));
+    }
+
     // read input cards
     for (int i = 0; i < 4; i++)
         scanf("%d", &inNum[i]);
@@ -269,6 +276,9 @@ int main(int argc, char *argv[]) {
     free(inNum);
     free(pos);
     free(answer);
+    for(row = 0; row < 24; row++)
+        free(formPos[row]);
+    free(formPos);
 
     return 0;
 }
