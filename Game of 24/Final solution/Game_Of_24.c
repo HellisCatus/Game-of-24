@@ -81,7 +81,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     res2 = calculate(res1, inNum[pos[3]], op2);
     res = calculate(inNum[pos[0]], res2, op3);
 
-    if(23.9 < res && res < 24.1){
+    if(23.9 < res && res < 24.1) {
         res = round(res);
     }
 
@@ -89,7 +89,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     if (res1 != min && res2 != min && res == 24) {
         answer[5] = 1; // Type 5 expression: a#((b#c)#d)=24
     }
-    else{
+    else {
         answer[5] = 0;
     }
 
@@ -101,7 +101,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     res2 = calculate(inNum[pos[1]], res1, op2);
     res = calculate(inNum[pos[0]], res2, op3);
 
-    if(23.9 < res && res < 24.1){
+    if(23.9 < res && res < 24.1) {
         res = round(res);
     }
 
@@ -109,7 +109,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     if (res1 != min && res2 != min && res == 24) {
         answer[4] = 1; // Type 4 expression: a#(b#(c#d))=24
     }
-    else{
+    else {
         answer[4] = 0;
     }
 
@@ -121,7 +121,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     res2 = calculate(inNum[pos[0]], res1, op2);
     res = calculate(res2, inNum[pos[3]], op3);
 
-    if(23.9 < res && res < 24.1){
+    if(23.9 < res && res < 24.1) {
         res = round(res);
     }
 
@@ -129,7 +129,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     if (res1 != min && res2 != min && res == 24) {
         answer[3] = 1; // Type 3 expression: (a#(b#c))#d=24
     }
-    else{
+    else {
         answer[3] = 0;
     }
 
@@ -141,7 +141,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     res2 = calculate(res1, inNum[pos[2]], op2);
     res = calculate(res2, inNum[pos[3]], op3);
 
-    if(23.9 < res && res < 24.1){
+    if(23.9 < res && res < 24.1) {
         res = round(res);
     }
 
@@ -149,7 +149,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     if (res1 != min && res2 != min && res == 24) {
         answer[2] = 1; // Type 2 expression: ((a#b)#c)#d=24
     }
-    else{
+    else {
         answer[2] = 0;
     }
 
@@ -161,7 +161,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     res2 = calculate(inNum[pos[2]], inNum[pos[3]], op2);
     res = calculate(res1, res2, op3);
 
-    if(23.9 < res && res < 24.1){
+    if(23.9 < res && res < 24.1) {
         res = round(res);
     }
 
@@ -169,7 +169,7 @@ int *getResult(int *inNum, int *pos, int oper) {
     if (res1 != min && res2 != min && res == 24) {
         answer[1] = 1; // Type 1 expression: (a#b)#(c#d)=24
     }
-    else{
+    else {
         answer[1] = 0;
     }
 
@@ -216,7 +216,7 @@ int backVal(int *inNum, int *pos, int location) {
                 break;
             }
         }
-        if(verif != 4){
+        if(verif != 4) {
             //backtrack how to get the result
             backOp(inNum, pos);
         }
