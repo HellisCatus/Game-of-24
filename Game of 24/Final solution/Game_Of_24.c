@@ -35,27 +35,18 @@ char getChar(int operation) {
         case 3:
             return '/';
     }
+    return '\0';
 }
 
 //The following function prints out expression that equals to 24. The function has the characters, positions of input numbers
-void print(int *inNum, int *pos, int operations, int *type) {
+void print(int *inNum, const int *pos, int operations, const int *type) {
     int op1 = (operations / 16) % 4; // Extract the first operation
     int op2 = (operations / 4) % 4;  // Extract the second operation
     int op3 = operations % 4;        // Extract the third operation
 
-    if (type[5] == 1) {
-        // Type 5 expression: a#((b#c)#d)=24
-        printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
-        outputCount++;
-    }
-    if (type[4] == 1) {
-        // Type 4 expression: a#(b#(c#d))=24
-        printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
-        outputCount++;
-    }
-    if (type[3] == 1) {
-        // Type 3 expression: (a#(b#c))#d=24
-        printf("(%d %c (%d %c %d)) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+    if (type[1] == 1) {
+        // Type 1 expression: (a#b)#(c#d)=24
+        printf("(%d %c %d) %c (%d %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
     if (type[2] == 1) {
@@ -63,15 +54,25 @@ void print(int *inNum, int *pos, int operations, int *type) {
         printf("((%d %c %d) %c %d) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
-    if (type[1] == 1) {
-        // Type 1 expression: (a#b)#(c#d)=24
-        printf("(%d %c %d) %c (%d %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+    if (type[3] == 1) {
+        // Type 3 expression: (a#(b#c))#d=24
+        printf("(%d %c (%d %c %d)) %c %d = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        outputCount++;
+    }
+    if (type[4] == 1) {
+        // Type 4 expression: a#(b#(c#d))=24
+        printf("%d %c (%d %c (%d %c %d)) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
+        outputCount++;
+    }
+    if (type[5] == 1) {
+        // Type 5 expression: a#((b#c)#d)=24
+        printf("%d %c ((%d %c %d) %c %d) = 24\n", inNum[pos[0]], getChar(op1), inNum[pos[1]], getChar(op2), inNum[pos[2]], getChar(op3), inNum[pos[3]]);
         outputCount++;
     }
 }
 
-int *getResult(int *inNum, int *pos, int oper) {
-    double res1, res2, res;
+int *getResult(int *inNum, const int *pos, int oper) {
+    double res1, res2, finalRes;
 
     // Calculate the first possible result
     int op1 = (oper / 4) % 4;
@@ -79,14 +80,14 @@ int *getResult(int *inNum, int *pos, int oper) {
     int op3 = (oper / 16) % 4;
     res1 = calculate(inNum[pos[1]], inNum[pos[2]], op1);
     res2 = calculate(res1, inNum[pos[3]], op2);
-    res = calculate(inNum[pos[0]], res2, op3);
+    finalRes = calculate(inNum[pos[0]], res2, op3);
 
-    if(23.9 < res && res < 24.1) {
-        res = round(res);
+    if(23.9 < finalRes && finalRes < 24.1) { // Check for possible floating point errors
+        finalRes = round(finalRes);
     }
 
     // Check if the result is valid and equals 24
-    if (res1 != min && res2 != min && res == 24) {
+    if (res1 != min && res2 != min && finalRes == 24) {
         answer[5] = 1; // Type 5 expression: a#((b#c)#d)=24
     }
     else {
@@ -99,14 +100,14 @@ int *getResult(int *inNum, int *pos, int oper) {
     op3 = (oper / 16) % 4;
     res1 = calculate(inNum[pos[2]], inNum[pos[3]], op1);
     res2 = calculate(inNum[pos[1]], res1, op2);
-    res = calculate(inNum[pos[0]], res2, op3);
+    finalRes = calculate(inNum[pos[0]], res2, op3);
 
-    if(23.9 < res && res < 24.1) {
-        res = round(res);
+    if(23.9 < finalRes && finalRes < 24.1) { // Check for possible floating point errors
+        finalRes = round(finalRes);
     }
 
     // Check if the result is valid and equals 24
-    if (res1 != min && res2 != min && res == 24) {
+    if (res1 != min && res2 != min && finalRes == 24) {
         answer[4] = 1; // Type 4 expression: a#(b#(c#d))=24
     }
     else {
@@ -119,14 +120,14 @@ int *getResult(int *inNum, int *pos, int oper) {
     op3 = oper % 4;
     res1 = calculate(inNum[pos[1]], inNum[pos[2]], op1);
     res2 = calculate(inNum[pos[0]], res1, op2);
-    res = calculate(res2, inNum[pos[3]], op3);
+    finalRes = calculate(res2, inNum[pos[3]], op3);
 
-    if(23.9 < res && res < 24.1) {
-        res = round(res);
+    if(23.9 < finalRes && finalRes < 24.1) { // Check for possible floating point errors
+        finalRes = round(finalRes);
     }
 
     // Check if the result is valid and equals 24
-    if (res1 != min && res2 != min && res == 24) {
+    if (res1 != min && res2 != min && finalRes == 24) {
         answer[3] = 1; // Type 3 expression: (a#(b#c))#d=24
     }
     else {
@@ -139,14 +140,14 @@ int *getResult(int *inNum, int *pos, int oper) {
     op3 = oper % 4;
     res1 = calculate(inNum[pos[0]], inNum[pos[1]], op1);
     res2 = calculate(res1, inNum[pos[2]], op2);
-    res = calculate(res2, inNum[pos[3]], op3);
+    finalRes = calculate(res2, inNum[pos[3]], op3);
 
-    if(23.9 < res && res < 24.1) {
-        res = round(res);
+    if(23.9 < finalRes && finalRes < 24.1) { // Check for possible floating point errors
+        finalRes = round(finalRes);
     }
 
     // Check if the result is valid and equals 24
-    if (res1 != min && res2 != min && res == 24) {
+    if (res1 != min && res2 != min && finalRes == 24) {
         answer[2] = 1; // Type 2 expression: ((a#b)#c)#d=24
     }
     else {
@@ -159,14 +160,14 @@ int *getResult(int *inNum, int *pos, int oper) {
     op3 = (oper / 4) % 4;
     res1 = calculate(inNum[pos[0]], inNum[pos[1]], op1);
     res2 = calculate(inNum[pos[2]], inNum[pos[3]], op2);
-    res = calculate(res1, res2, op3);
+    finalRes = calculate(res1, res2, op3);
 
-    if(23.9 < res && res < 24.1) {
-        res = round(res);
+    if(23.9 < finalRes &&finalRes < 24.1) { // Check for possible floating point errors
+        finalRes = round(finalRes);
     }
 
     // Check if the result is valid and equals 24
-    if (res1 != min && res2 != min && res == 24) {
+    if (res1 != min && res2 != min && finalRes == 24) {
         answer[1] = 1; // Type 1 expression: (a#b)#(c#d)=24
     }
     else {
@@ -179,15 +180,15 @@ int *getResult(int *inNum, int *pos, int oper) {
 
 // generate all possible operations
 void backOp(int *inNum, int *pos) {
-    int *result;
+    int *type;
     for (int i = 0; i < 64; i++) {
-        result = getResult(inNum, pos, i);
-        print(inNum, pos, i, result);
+        type = getResult(inNum, pos, i);
+        print(inNum, pos, i, type);
     }
 }
 
 // checks if the element is already in the position array
-int isInNum(int *pos, int i, int size) {
+int isInNum(const int *pos, int i, int size) {
     for (int e = 0; e < size; e++) {
         if (pos[e] == i) {
             return 1;
