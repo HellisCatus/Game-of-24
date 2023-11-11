@@ -199,7 +199,6 @@ int isInNum(const int *pos, int i, int size) {
 
 // calculate all possible variations of positions for inNum
 int backVal(int *inNum, int *pos, int location) {
-    int four = 4;
     if (location == 4) {
         nrLines++;
         for (int i=0; i<4; i++) {
@@ -223,7 +222,7 @@ int backVal(int *inNum, int *pos, int location) {
         }
     }
 
-    for (int i = 0; i < four; i++) {
+    for (int i = 0; i < 4; i++) {
         if (isInNum(pos, i, location)==0) {
             // if i is not yet in order we can add it and backtrack the rest of order array
             pos[location] = i;
